@@ -31,5 +31,6 @@ Test-Suite test-pnotify
   Hs-Source-Dirs:       test
   Build-Depends:        base >=4.8 && <4.9
                       , pnotify
+                      , directory
                       , hspec
                       , QuickCheck
