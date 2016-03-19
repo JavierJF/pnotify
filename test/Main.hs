@@ -1,13 +1,27 @@
 import System.PNotify
 import Test.Hspec
-import Test.QuickCheck
+import Control.Concurrent (threadDelay)
 import Control.Exception (evaluate)
+import System.Directory
+
+import qualified MaskTests
+
+readLoop :: IWatchHandle -> INBuffer -> IO ()
+readLoop hd buf = do
+    events <- readEvents hd buf
+    mapM_ print events
+    threadDelay 1000000
+    readLoop hd buf
+
+testFun :: INBuffer -> IO ()
+testFun buf = do
+    let mask = unMask (inCreate *|* inDelete *|* inModify *|* inMove)
+    fd <- _iNotifyInit
+    wd <- iNotifyAddWatch fd "." mask
+    readLoop wd buf
 
 main :: IO ()
-main = hspec $
-  describe "Prelude.head" $ do
-    it "returns the first element of a list" $
-      head [23 ..] `shouldBe` (23 :: Int)
+main = hspec spec
 
-    it "throws an exception if used with an empty list" $
-      evaluate (head []) `shouldThrow` anyException
+spec :: Spec
+spec = describe "Masks" MaskTests.spec
