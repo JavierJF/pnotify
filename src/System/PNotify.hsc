@@ -126,10 +126,14 @@ iEventSize :: Int
 iEventSize = ((#size struct inotify_event) + #const NAME_MAX) :: Int
 
 iNotifyInit :: IO INFD
-iNotifyInit = _iNotifyInit >>= (\fd -> return $ INFD fd)
+iNotifyInit = do
+    fd <- _iNotifyInit
+    pfd <- _store_fd fd
+    fp <- newForeignPtr _close_fd pfd
+    return $ INFD fp
 
-iNotifyClose :: INFD -> IO CInt
-iNotifyClose = _close . fD
+iNotifyClose :: INFD -> IO ()
+iNotifyClose = finalizeForeignPtr . fD
 
 data IWatchHandle = IWatchHandle { iWFD :: CInt
                                  , iRWH :: CInt
