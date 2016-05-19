@@ -26,7 +26,7 @@ import Foreign (ForeignPtr, newForeignPtr, peekByteOff)
 import Foreign.C.Types
 import Foreign.C.String hiding (peekCString)
 import Foreign.Marshal.Alloc (finalizerFree,allocaBytes)
-import Foreign.Ptr (Ptr, plusPtr)
+import Foreign.Ptr (Ptr, FunPtr, plusPtr)
 import Foreign.ForeignPtr (FinalizerPtr, finalizeForeignPtr)
 import GHC.Foreign (peekCString)
 import GHC.IO.Encoding (getFileSystemEncoding)
@@ -95,7 +95,7 @@ data INBuffer  = INBuffer { iNBRaw  :: Ptr INotifyEvent
 data INotifyHandle = INotifyHandle { iNHRaw :: ForeignPtr INBuffer
                                    , iNHBuf :: INBuffer }
 
-data INFD = INFD { fD :: CInt }
+data INFD = INFD { fD :: ForeignPtr CInt }
 
 -- | '_iNotifyInit' initializes a new inotify instance and returns a file
 -- descriptor associated with a new inotify event queue
@@ -114,9 +114,13 @@ foreign import ccall "inotify_add_watch"
 foreign import ccall "inotify_rm_watch"
     _iNotifyRmWatch :: CInt -> CInt -> IO CInt
 
--- | '_close'
-foreign import ccall "close"
-    _close :: CInt -> IO CInt
+-- | '_store_fd'
+foreign import ccall "store_fd"
+    _store_fd :: CInt -> IO (Ptr CInt)
+
+-- | '_close_fd'
+foreign import ccall "&close_fd"
+    _close_fd :: FunPtr (Ptr CInt -> IO ())
 
 iEventSize :: Int
 iEventSize = ((#size struct inotify_event) + #const NAME_MAX) :: Int
