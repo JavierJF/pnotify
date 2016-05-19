@@ -156,8 +156,8 @@ iNotifyAddWatch fd path mask = do
 
 iNotifyRmWatch :: IWatchHandle -> IO CInt
 iNotifyRmWatch iwh = do
-     finalizeForeignPtr (pBuf iwh)
-     _iNotifyRmWatch (iWFD iwh) (iRWH iwh)
+    finalizeForeignPtr (pBuf iwh)
+    _iNotifyRmWatch (iWFD iwh) (iRWH iwh)
 
 allocaINBuffer :: Int -> (INBuffer -> IO a) -> IO a
 allocaINBuffer s f = let size = (s*iEventSize)
@@ -181,8 +181,8 @@ readEventsBuffer ptr length enc = do
 
 readEvents :: IWatchHandle -> INBuffer -> IO [INotifyEvent]
 readEvents iwh buf = do
-        let buffer  = iNBRaw buf
-            bufSize = iNBSize buf
-        enc    <- getFileSystemEncoding
-        length <- hGetBufNonBlocking (iWH iwh) buffer bufSize
-        readEventsBuffer buffer length enc
+    let buffer  = iNBRaw buf
+        bufSize = iNBSize buf
+    enc    <- getFileSystemEncoding
+    length <- hGetBufNonBlocking (iWH iwh) buffer bufSize
+    readEventsBuffer buffer length enc
