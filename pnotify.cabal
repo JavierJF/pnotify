@@ -14,12 +14,14 @@ Build-Type:          Simple
 Cabal-Version:       >=1.10
 
 Source-Repository head
-    type:       git
-    location:   https://github.com/JavierJF/pnotify
+  Type:                 git
+  Location:             https://github.com/JavierJF/pnotify
 
 Library
   Exposed-Modules:      System.PNotify
   Default-Language:     Haskell2010
+  Include-Dirs:         include
+  C-Sources:            csrc/_unistd.c
   Hs-Source-Dirs:       src
   Build-Depends:        base >=4.8 && <4.9
                       , unix
